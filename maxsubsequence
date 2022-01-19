@@ -61,5 +61,7 @@ int main(){
     cout << "please enter the name of the number file" << endl;
     string fileName;
     cin >> fileName;
+    fileName+=".txt"
+    sequenceFile.open(fileName)
     NumberFile n = new NumberFile(sequenceFile);
 }
