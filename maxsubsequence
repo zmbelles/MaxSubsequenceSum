@@ -1,0 +1,61 @@
+#include <vector>
+#include <iostream>
+#include <string>
+#include <map>
+using namespace std;
+
+class NumberFile{
+private:
+    vector<int> listOfNumbers;
+    vector<int> max_value;
+    vector<int> actual_sequence
+    int sum;
+    int currentNum;
+public:
+    NumberFile(ifstream file){
+        int nextNum;
+        file >> nextNum;
+        int i=0;
+        while(!file.eof()){
+            listOfNumbers.push_back(nextNum);
+            max_value.push_back(nextNum);
+            actual_sequence[i]=i;
+            file >> nextNum;
+            i++;
+        }
+        listOfNumbers.push_back(nextNum);
+        
+        
+    }
+    void execute();
+};
+
+void NumberFile::execute(){
+    for(int i=1; i<listOfNumbers.size(); i++){
+        for(int j=0;j<listOfNumbers.size(); j++){
+            if(listOfNumbers[j]<listofNumbers[i]){
+                max
+            }
+        }
+    }
+}
+
+class PossibleSubsequence{
+private:
+    vector<int> thisSubsequence;
+    int sizeOfSubsequence;
+public:
+    void addNum(int num){thisSubsequence.push_back(num);}
+    ~PossibleSubsequence();
+};
+PossibleSubsequence::~PossibleSubsequence(){
+    delete[] thisSubsequence;
+}
+
+int main(){
+    ifstream sequenceFile;
+    cout << "please enter the name of the number file" << endl;
+    string fileName;
+    cin >> fileName;
+    NumberFile n = new NumberFile(sequenceFile);
+}
