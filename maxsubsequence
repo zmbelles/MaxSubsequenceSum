@@ -31,13 +31,13 @@ public:
 };
 
 void NumberFile::execute(){
-    for(int j=1; j<listOfNumbers.size(); j++){
-        for(int i=0;i<listOfNumbers.size(); i++){
+    for(int i=1; i<listOfNumbers.size(); i++){
+        for(int j=0;j<listOfNumbers.size(); j++){
             if(listOfNumbers[j]<listofNumbers[i]){
                 int tmp=max_value[j]+listOfNumbers[i];
                 if(tmp>max_value[i]){
                     max_value[i]=tmp;
-                    actual_sequence[j]=j;
+                    actual_sequence[i]=j;
                 }
             }
         }
