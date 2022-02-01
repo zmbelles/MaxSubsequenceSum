@@ -16,6 +16,9 @@ public:
     void print();
     bool find(int n);
 };
+Subsequence::Subsequence(){
+    size=0;
+}
 bool Subsequence::find(int n){
     for(int i=0; i<subsequenceNumber.size();i++){
         if(subsequenceNumber[i]==n){
@@ -25,15 +28,15 @@ bool Subsequence::find(int n){
     return false;
 }
 void Subsequence::print(){
-    for(int i=0; i<subsequenceNumber.size(); i++){
+    for(int i=subsequenceNumber.size(); i>=0; i--){
         cout << "Number: " << subsequenceNumber[i] << endl;
-        cout << "Index: " << subsequenceLIS[i] << endl;
     }
     cout << endl;
 }
 void Subsequence::add(int num,int index){
     subsequenceNumber.push_back(num);
     subsequenceLIS.push_back(index);
+    size++;
 }
 Subsequence::Subsequence(Subsequence &s){
     for(int i=0; i<subsequenceNumber.size(); i++){
@@ -54,10 +57,10 @@ public:
     void addSubsequence(Subsequence*& s){allMaxSubsequences.push_back(s);}
     void updateAllSubsequences(int, int);
     int findMaxLength();
-    bool execute(int);
+    void execute(int);
     void print();
 };
-bool SubsequenceContainer::execute(int longestSize){
+void SubsequenceContainer::execute(int longestSize){
     int target = longestSize;
     for(int i=arr.size()-1;i>0;i--){
         int thisNum = arr[i];
@@ -135,7 +138,7 @@ void SubsequenceContainer::print(){
     }
 }
 int main(){
-    vector<int> arr = {0,0,0,0,0,0,0,0,0,0,0,0,0};
+    vector<int> arr = {10, 9, 2, 5, 3, 101, 7, 18};
     SubsequenceContainer sc(arr);
     int max = sc.findMaxLength();
     sc.execute(max);
