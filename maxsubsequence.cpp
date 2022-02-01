@@ -7,28 +7,37 @@ class Subsequence{
 private:
     friend class SubsequenceContainer;
     vector<int> subsequenceNumber;
-    vector<int> subsequenceIndex;
+    vector<int> subsequenceLIS;
     int size;
 public:
     Subsequence();
     Subsequence(Subsequence &);
     void add(int,int);
     void print();
+    bool find(int n);
 };
+bool Subsequence::find(int n){
+    for(int i=0; i<subsequenceNumber.size();i++){
+        if(subsequenceNumber[i]==n){
+            return true;
+        }
+    }
+    return false;
+}
 void Subsequence::print(){
     for(int i=0; i<subsequenceNumber.size(); i++){
         cout << "Number: " << subsequenceNumber[i] << endl;
-        cout << "Index: " << subsequenceIndex[i] << endl;
+        cout << "Index: " << subsequenceLIS[i] << endl;
     }
     cout << endl;
 }
 void Subsequence::add(int num,int index){
     subsequenceNumber.push_back(num);
-    subsequenceIndex.push_back(index);
+    subsequenceLIS.push_back(index);
 }
 Subsequence::Subsequence(Subsequence &s){
     for(int i=0; i<subsequenceNumber.size(); i++){
-        s.subsequenceIndex[i] = this->subsequenceIndex[i];
+        s.subsequenceLIS[i] = this->subsequenceLIS[i];
         s.subsequenceNumber[i] = this->subsequenceNumber[i];
         size++;
     }
@@ -37,23 +46,61 @@ Subsequence::Subsequence(Subsequence &s){
 class SubsequenceContainer{
 private:
     friend class Subsequence;
-    vector<Subsequence> allMaxSubsequences;
+    vector<Subsequence*> allMaxSubsequences;
     vector<int> arr;
     vector<int> LIS;
 public:
     SubsequenceContainer();
-    void addSubsequence(Subsequence s){allMaxSubsequences.push_back(s);}
+    void addSubsequence(Subsequence*& s){allMaxSubsequences.push_back(s);}
     void updateAllSubsequences(int, int);
     int findMaxLength();
+    bool execute(int longestSize){
+        int target = longestSize;
+        for(int i=arr.size()-1;i>0;i--){
+            int thisNum = arr[i];
+            if(LIS[i]==target){
+                if(!allMaxSubsequences.empty()){
+                    vector<Subsequence*>::iterator sitr;
+                    for(sitr=allMaxSubsequences.begin();sitr!=allMaxSubsequences.end();sitr++){
+                        int lastNum = (*sitr)->subsequenceNumber.back();
+                        int lastLIS = (*sitr)->subsequenceLIS.back();
+                        if(thisNum<lastNum && LIS[i]<lastLIS){
+                            (*sitr)->add(thisNum, LIS[i]);
+                        }
+                        else if(thisNum>lastNum && LIS[i]==lastLIS){
+                            Subsequence* s = new Subsequence();
+                            for(int i=0;i<(*sitr)->subsequenceNumber.size()-1;i++){
+                                s->add((*sitr)->subsequenceNumber[i],(*sitr)->subsequenceLIS[i]);
+                            }
+                            s->add(thisNum,LIS[i]);
+                        }
+                    }
+                }
+                else{
+                    Subsequence* s = new Subsequence();
+                    int n = LIS[i];
+                    s->add(thisNum, n);
+                    allMaxSubsequences.push_back(s);
+                    target--;
+                }
+            }
+            else if(LIS[i]==longestSize){
+                Subsequence* s = new Subsequence();
+                int n = LIS[i];
+                s->add(thisNum, n);
+                allMaxSubsequences.push_back(s);
+            }
+        }
+    }
     void print();
 };
 void SubsequenceContainer::updateAllSubsequences(int num, int index){
-    vector<Subsequence>::iterator vitr;
+    vector<Subsequence*>::iterator vitr;
     for(vitr=allMaxSubsequences.begin(); vitr!=allMaxSubsequences.end(); vitr++){
-        int lastNum = vitr->subsequenceNumber.back();
-        int lastIndex = vitr->subsequenceIndex.back();
+        int lastNum = (*vitr)->subsequenceNumber.back();
+        int lastIndex = (*vitr)->subsequenceLIS.back();
         if(num<lastNum&&index<lastIndex){
-            vitr->add(num, index);
+            (*vitr)->add(num, index);
         }
     }
 }
@@ -73,11 +120,24 @@ int SubsequenceContainer::findMaxLength(){
     return index;
 }
 void SubsequenceContainer::print(){
-    vector<Subsequence>::iterator sitr;
+    vector<Subsequence*>::iterator sitr;
     int NumofSums = 0;
     for(sitr=allMaxSubsequences.begin();sitr!=allMaxSubsequences.end();sitr++){
         cout << "Max Sequence #" << NumofSums << endl;
         NumofSums++;
-        sitr->print();
+        (*sitr)->print();
     }
+}
+int main(){
+    Subsequence s;
+    s.add(10,0);
+    s.add(9,1);
+    s.add(2,2);
+    s.add(5,3);
+    s.add(3,4);
+    s.add(101,5);
+    s.add(7,6);
+    s.add(18,7);
+
+    return 0;
 }
