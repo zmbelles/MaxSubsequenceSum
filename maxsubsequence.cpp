@@ -72,6 +72,7 @@ void SubsequenceContainer::execute(int longestSize){
                     int lastLIS = (*sitr)->subsequenceLIS.back();
                     if(thisNum<lastNum && LIS[i]<lastLIS){
                         (*sitr)->add(thisNum, LIS[i]);
+                        target--;
                     }
                     else if(thisNum>lastNum && LIS[i]==lastLIS){
                         Subsequence* s = new Subsequence();
@@ -79,6 +80,7 @@ void SubsequenceContainer::execute(int longestSize){
                             s->add((*sitr)->subsequenceNumber[i],(*sitr)->subsequenceLIS[i]);
                         }
                         s->add(thisNum,LIS[i]);
+                        allMaxSubsequences.push_back(s);
                     }
                 }
             }
@@ -97,10 +99,12 @@ void SubsequenceContainer::execute(int longestSize){
             allMaxSubsequences.push_back(s);
         }
     }
+    
 }
 SubsequenceContainer::SubsequenceContainer(vector<int> v){
     for(int i=0;i<v.size();i++){
         arr.push_back(v[i]);
+        LIS.push_back(1);
     }
 }
 void SubsequenceContainer::updateAllSubsequences(int num, int index){
@@ -126,7 +130,7 @@ int SubsequenceContainer::findMaxLength(){
                 }
         }
     }
-    return index;
+    return max;
 }
 void SubsequenceContainer::print(){
     vector<Subsequence*>::iterator sitr;
@@ -138,7 +142,10 @@ void SubsequenceContainer::print(){
     }
 }
 int main(){
-    vector<int> arr = {10, 9, 2, 5, 3, 101, 7, 18};
+    vector<int> arr = {186, 359, 274, 927, 890, 520, 571, 310, 916, 798, 732, 23, 196, 579,
+426, 188, 524, 991, 91, 150, 117, 565, 993, 615, 48, 811, 594, 303, 191,
+505, 724, 818, 536, 416, 179, 485, 334, 74, 998, 100, 197, 768, 421,
+114, 739, 636, 356, 908, 477, 656};
     SubsequenceContainer sc(arr);
     int max = sc.findMaxLength();
     sc.execute(max);
