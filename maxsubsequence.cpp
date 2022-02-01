@@ -22,7 +22,7 @@ Subsequence::Subsequence(){
 }
 //pre: a numbe to find inside the subsequenceNumber Vector
 //post: returns true if it is found, false if not
-//@param n: then umber to fin
+//@param n: then number to find inside the array
 bool Subsequence::find(int n){
     for(int i=0; i<subsequenceNumber.size();i++){
         if(subsequenceNumber[i]==n){
@@ -90,17 +90,23 @@ void SubsequenceContainer::execute(int longestSize){
                         (*sitr)->add(thisNum, thisLIS);
                         target--;
                     }
-                    //create a new Subsequence* if it is greater
+                    
+                    //create a new Subsequence* if thisNum is greater than the last num in the subsequenceNumber vector, AND 
+                    // both of those numbers LIS values are equal
+                    //copy all but the last element from the (*sitr)->subsequenceNum vector to s*
+                    //push back thisNum and thisLIS to their respective vectors
+                    //push the s* onto allMaxSubsequences
                     else if(thisNum>lastNum && thisLIS==lastLIS){
                         Subsequence* s = new Subsequence();
                         for(int i=0;i<(*sitr)->subsequenceNumber.size()-1;i++){
                             s->add((*sitr)->subsequenceNumber[i],(*sitr)->subsequenceLIS[i]);
                         }
-                        s->add(thisNum,LIS[i]);
+                        s->add(thisNum,thisLIS);
                         allMaxSubsequences.push_back(s);
                     }
                 }
             }
+            //if there allMaxSubsequences is empty, push thisNum onto it
             else{
                 Subsequence* s = new Subsequence();
                 int n = LIS[i];
@@ -109,6 +115,7 @@ void SubsequenceContainer::execute(int longestSize){
                 target--;
             }
         }
+        //create a new Subsequence* and push it onto the allMaxSubsequences vector if its LIS value is also the highest but not the current
         else if(LIS[i]==longestSize){
             Subsequence* s = new Subsequence();
             int n = LIS[i];
@@ -116,24 +123,15 @@ void SubsequenceContainer::execute(int longestSize){
             allMaxSubsequences.push_back(s);
         }
     }
-    
 }
+//default constructor to populate the LIS and arr vectors
 SubsequenceContainer::SubsequenceContainer(vector<int> v){
     for(int i=0;i<v.size();i++){
         arr.push_back(v[i]);
         LIS.push_back(1);
     }
 }
-void SubsequenceContainer::updateAllSubsequences(int num, int index){
-    vector<Subsequence*>::iterator vitr;
-    for(vitr=allMaxSubsequences.begin(); vitr!=allMaxSubsequences.end(); vitr++){
-        int lastNum = (*vitr)->subsequenceNumber.back();
-        int lastIndex = (*vitr)->subsequenceLIS.back();
-        if(num<lastNum&&index<lastIndex){
-            (*vitr)->add(num, index);
-        }
-    }
-}
+//find and populate the proper LIS values in the LIS vector
 int SubsequenceContainer::findMaxLength(){
     int max = 0;
     int index = 0;
@@ -149,6 +147,7 @@ int SubsequenceContainer::findMaxLength(){
     }
     return max;
 }
+//go through each Subsequence* inside the allMaxSubsequences vector and print out their subsequences
 void SubsequenceContainer::print(){
     vector<Subsequence*>::iterator sitr;
     int NumofSums = 0;
