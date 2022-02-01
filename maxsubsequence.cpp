@@ -1,102 +1,83 @@
-#include <vector>
-#include <iostream>
-#include <string>
-#include <map>
-#include <fstream>
+#include<iostream>
+#include<vector>
+
 using namespace std;
-//test
-class NumberFile{
+
+class Subsequence{
 private:
-    vector<int> listOfNumbers;
-    vector<int> max_value;
-    vector<int> actual_sequence;
-    vector<int> sub_sequence;
-    int sum;
-    int currentNum;
+    friend class SubsequenceContainer;
+    vector<int> subsequenceNumber;
+    vector<int> subsequenceIndex;
+    int size;
 public:
-    NumberFile(ifstream& file){
-        int nextNum;
-        file >> nextNum;
-        int i=0;
-        while(!file.eof()){
-            listOfNumbers.push_back(nextNum);
-            max_value.push_back(nextNum);
-            actual_sequence.push_back(i);
-            file >> nextNum;
-            i++;
-        }
-        
-        
-    }
-    int execute();
+    Subsequence();
+    Subsequence(Subsequence &);
+    void add(int,int);
     void print();
-    void decode(int index);
 };
+void Subsequence::print(){
+    for(int i=0; i<subsequenceNumber.size(); i++){
+        cout << "Number: " << subsequenceNumber[i] << endl;
+        cout << "Index: " << subsequenceIndex[i] << endl;
+    }
+    cout << endl;
+}
+void Subsequence::add(int num,int index){
+    subsequenceNumber.push_back(num);
+    subsequenceIndex.push_back(index);
+}
+Subsequence::Subsequence(Subsequence &s){
+    for(int i=0; i<subsequenceNumber.size(); i++){
+        s.subsequenceIndex[i] = this->subsequenceIndex[i];
+        s.subsequenceNumber[i] = this->subsequenceNumber[i];
+        size++;
+    }
+}
 
-int NumberFile::execute(){
-    int overallMax = listOfNumbers[0];
-    int overallMaxIndex = 0;
-    for(int i=1; i<listOfNumbers.size(); i++){
-        for(int j=0;j<i; j++){
-            if(listOfNumbers[j]<listOfNumbers[i]){
-                int tmp=max_value[j]+listOfNumbers[i];
-                if(tmp>max_value[i]){
-                    max_value[i]=tmp;
-                    actual_sequence[i]=j;
-                }
-                if(max_value[i] > overallMax){
-                    overallMax = max_value[i];
-                    overallMaxIndex = i;
-                }
-            }
+class SubsequenceContainer{
+private:
+    friend class Subsequence;
+    vector<Subsequence> allMaxSubsequences;
+    vector<int> arr;
+    vector<int> LIS;
+public:
+    SubsequenceContainer();
+    void addSubsequence(Subsequence s){allMaxSubsequences.push_back(s);}
+    void updateAllSubsequences(int, int);
+    int findMaxLength();
+    void print();
+};
+void SubsequenceContainer::updateAllSubsequences(int num, int index){
+    vector<Subsequence>::iterator vitr;
+    for(vitr=allMaxSubsequences.begin(); vitr!=allMaxSubsequences.end(); vitr++){
+        int lastNum = vitr->subsequenceNumber.back();
+        int lastIndex = vitr->subsequenceIndex.back();
+        if(num<lastNum&&index<lastIndex){
+            vitr->add(num, index);
         }
     }
-    return overallMaxIndex;
 }
-
-void NumberFile::print(){
-    for(int i = 0; i < listOfNumbers.size(); i++){
-        cout << listOfNumbers[i] << " ";
+int SubsequenceContainer::findMaxLength(){
+    int max = 0;
+    int index = 0;
+    for(int i = 1; i < arr.size(); i++){
+        for(int j = 0; j < i; j++){
+            if(arr[i] > arr[j] && LIS[i] < LIS[j] + 1)
+                LIS[i] = LIS[j] + 1;
+                if(LIS[i] > max){
+                    max = LIS[i];
+                    index = i;
+                }
+        }
     }
-    cout << endl;
-    for(int i = 0; i < max_value.size(); i++){
-        cout << max_value[i] << " ";
-    }
-    cout << endl;
-    for(int i = 0; i < actual_sequence.size(); i++){
-        cout << actual_sequence[i] << " ";
-    }
-    cout << endl;
+    return index;
 }
-
-void NumberFile::decode(int index){
-    sub_sequence.push_back(listOfNumbers[index]);
-    int target = actual_sequence[index];
-    int new_target = actual_sequence[target];
-    while(target!= new_target){
-        sub_sequence.push_back(listOfNumbers[target]);
-        target = actual_sequence[target];
+void SubsequenceContainer::print(){
+    vector<Subsequence>::iterator sitr;
+    int NumofSums = 0;
+    for(sitr=allMaxSubsequences.begin();sitr!=allMaxSubsequences.end();sitr++){
+        cout << "Max Sequence #" << NumofSums << endl;
+        NumofSums++;
+        sitr->print();
     }
-    sub_sequence.push_back(listOfNumbers[new_target]);
-    cout << "Maximum Subsequence: " << endl;
-    for(int i = sub_sequence.size() - 1; i >= 0; i--){
-        cout << sub_sequence[i] << " ";
-    }
-    
-}
-
-
-int main(){
-    int maxIndex;
-    cout << "please enter the name of the number file" << endl;
-    string fileName;
-    cin >> fileName;
-    ifstream sequenceFile(fileName);
-    NumberFile n(sequenceFile);
-    n.print();
-    cout << endl;
-    maxIndex = n.execute();
-    n.print();
-    n.decode(maxIndex);
-    return 0;
 }
