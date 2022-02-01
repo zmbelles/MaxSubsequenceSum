@@ -2,7 +2,7 @@
 #include<vector>
 
 using namespace std;
-
+//class to keep each longest subsequence
 class Subsequence{
 private:
     friend class SubsequenceContainer;
@@ -16,9 +16,13 @@ public:
     void print();
     bool find(int n);
 };
+//initialize the size to 0 when object is created
 Subsequence::Subsequence(){
     size=0;
 }
+//pre: a numbe to find inside the subsequenceNumber Vector
+//post: returns true if it is found, false if not
+//@param n: then umber to fin
 bool Subsequence::find(int n){
     for(int i=0; i<subsequenceNumber.size();i++){
         if(subsequenceNumber[i]==n){
@@ -27,17 +31,22 @@ bool Subsequence::find(int n){
     }
     return false;
 }
+//go through all of the indexes of the subsequenceNumber vector and print them to the console
 void Subsequence::print(){
     for(int i=subsequenceNumber.size(); i>=0; i--){
         cout << "Number: " << subsequenceNumber[i] << endl;
     }
     cout << endl;
 }
+//pre: a number and index to be added to their respective vectors
+//post: both numbers have been pushed back onto their respective vectors
 void Subsequence::add(int num,int index){
     subsequenceNumber.push_back(num);
     subsequenceLIS.push_back(index);
     size++;
 }
+//pre: an object to be copied, an empty object
+//post: a new object has been created and is a deep copy of another
 Subsequence::Subsequence(Subsequence &s){
     for(int i=0; i<subsequenceNumber.size(); i++){
         s.subsequenceLIS[i] = this->subsequenceLIS[i];
@@ -45,7 +54,7 @@ Subsequence::Subsequence(Subsequence &s){
         size++;
     }
 }
-
+//class to store all of the subsequences and to execute the neccesary code to print them out
 class SubsequenceContainer{
 private:
     friend class Subsequence;
@@ -60,21 +69,29 @@ public:
     void execute(int);
     void print();
 };
+//pre: a filled arr and LIS vector
+//post: allMaxSubsequences has been updated with all longest subsequences
 void SubsequenceContainer::execute(int longestSize){
     int target = longestSize;
+    //loop through all array elements
     for(int i=arr.size()-1;i>0;i--){
         int thisNum = arr[i];
+        //if the current LIS is what we are looking for
         if(LIS[i]==target){
             if(!allMaxSubsequences.empty()){
                 vector<Subsequence*>::iterator sitr;
+                //check the current number against the last number stored in each Subsequence* subsequenceNumber vector
                 for(sitr=allMaxSubsequences.begin();sitr!=allMaxSubsequences.end();sitr++){
                     int lastNum = (*sitr)->subsequenceNumber.back();
                     int lastLIS = (*sitr)->subsequenceLIS.back();
-                    if(thisNum<lastNum && LIS[i]<lastLIS){
-                        (*sitr)->add(thisNum, LIS[i]);
+                    int thisLIS = LIS[i];
+                    //add thisNum to the vector if it is less than the last number AND its LIS value is lower than it
+                    if(thisNum<lastNum && thisLIS<lastLIS){
+                        (*sitr)->add(thisNum, thisLIS);
                         target--;
                     }
-                    else if(thisNum>lastNum && LIS[i]==lastLIS){
+                    //create a new Subsequence* if it is greater
+                    else if(thisNum>lastNum && thisLIS==lastLIS){
                         Subsequence* s = new Subsequence();
                         for(int i=0;i<(*sitr)->subsequenceNumber.size()-1;i++){
                             s->add((*sitr)->subsequenceNumber[i],(*sitr)->subsequenceLIS[i]);
@@ -142,10 +159,7 @@ void SubsequenceContainer::print(){
     }
 }
 int main(){
-    vector<int> arr = {186, 359, 274, 927, 890, 520, 571, 310, 916, 798, 732, 23, 196, 579,
-426, 188, 524, 991, 91, 150, 117, 565, 993, 615, 48, 811, 594, 303, 191,
-505, 724, 818, 536, 416, 179, 485, 334, 74, 998, 100, 197, 768, 421,
-114, 739, 636, 356, 908, 477, 656};
+    vector<int> arr = {18,35,92,55,52,57,31,91,79,73};
     SubsequenceContainer sc(arr);
     int max = sc.findMaxLength();
     sc.execute(max);
